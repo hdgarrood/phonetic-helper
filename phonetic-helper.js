@@ -3,10 +3,14 @@
 // This is IPA, RP (as in, proper English).
 // Source: https://en.wiktionary.org/wiki/Appendix:English_pronunciation
 var phoneticKey = {
-    'æ'  : ['b*a*d', 'c*a*t', 'r*a*n'],
-    'æɹ' : ['c*arr*y'],
-    'eɪ' : ['b*ai*t', 'pl*ay*', 's*a*me'],
-    'ɑː' : ['f*a*ther']
+    'æ'  : 'c*a*t',
+    'æɹ' : 'c*arr*y',
+    'eɪ' : 'pl*ay*',
+    'ɑː' : 'f*a*ther',
+    'a'  : 'a',
+    's'  : 's',
+    'd'  : 'd',
+    'f'  : 'f'
 }
 
 function renderWord(word) {
@@ -15,5 +19,7 @@ function renderWord(word) {
 }
 
 window.onload = function() {
-    $('input#word').inputValue('lol')
+    $('input#explain').click(function(ev) {
+        $('#word-display').text($('input#word')[0].value)
+    })
 }

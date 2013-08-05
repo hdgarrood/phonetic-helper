@@ -1,0 +1,8 @@
+p#word-display {
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    color: red;
+    text-size: 500%;
+    text-align: center;
+}

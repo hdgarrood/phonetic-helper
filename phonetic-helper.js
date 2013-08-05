@@ -54,6 +54,7 @@ var phoneticKey = {
         'ŋ'  : 'ri*ng*',
         'p'  : '*p*en',
         'ɹ'  : '*r*un',
+        'r'  : '*r*un',
         's'  : '*s*et',
         'ʃ'  : '*sh*e',
         't'  : '*t*on',
@@ -66,9 +67,55 @@ var phoneticKey = {
     }
 }
 
+var vowelList = Object.getOwnPropertyNames(phoneticKey.vowels),
+    consonantList = Object.getOwnPropertyNames(phoneticKey.consonants),
+    soundList = vowelList + consonantList
+
 function renderWord(word) {
     var parts = word.split('*')
     return parts[0] + '<em>' + parts[1] + '</em>' + parts[2]
+}
+
+// Given an IPA word, return an array of individual sounds
+function splitIpaSounds(ipaWord) {
+    var result = [],
+        // int: the longest sound we know of (in IPA).
+        longestSound = soundList.maximum(function(sound) {
+            return sound.length
+        }),
+        // str: returns the next sound from the beginning of `ipaWord` whose
+        // IPA representation is `length` characters long (or `null` if none
+        // exists)
+        getNextSoundOfLength = function(ipaWord, length) {
+            var candidate = ipaWord.slice(0, length)
+
+            if (soundList.indexOf(candidate) > -1) {
+                return candidate
+            } else {
+                return null
+            }
+        },
+        // str: returns the next sound from the beginning of `ipaWord` (or
+        // `null` if there is none)
+        getNextSound = function(ipaWord) {
+
+        }
+
+    while (ipaWord.length > 0) {
+        for (var nextSoundLength = 1;
+                nextSoundLength <= longestSound;
+                nextSoundLength++) {
+
+            var candidate = ipaWord.slice(0, nextSoundLength)
+            if (soundList.indexOf(candidate) > -1) {
+                ipaWord = ipaWord.slice(nextSoundLength)
+                result.push(candidate)
+                break
+            }
+        }
+    }
+
+    return result
 }
 
 window.onload = function() {

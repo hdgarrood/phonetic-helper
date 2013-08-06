@@ -69,23 +69,38 @@ var phoneticKey = {
 
 var vowelList = Object.getOwnPropertyNames(phoneticKey.vowels),
     consonantList = Object.getOwnPropertyNames(phoneticKey.consonants),
-    soundList = vowelList + consonantList
+    soundList = vowelList.concat(consonantList)
+
 
 function renderWord(word) {
     var parts = word.split('*')
     return parts[0] + '<em>' + parts[1] + '</em>' + parts[2]
 }
 
-// Given an IPA word, return an array of individual sounds
+// Given an IPA word, return an array of individual sounds (or unrecognised
+// sounds). Each sound is represented by a 2-element array; if recognised, the
+// first element will be "sound"; otherwise, "not-sound". The second element
+// will be the sound.
+//
+//     splitIpaSounds('/taɪreɪd/')
+//     => [
+//          ['not-sound', '/'],
+//          ['sound', 't'],
+//          ['sound', 'aɪ']
+//          ['sound', 'r'],
+//          ['sound', 'eɪ'],
+//          ['sound', 'd'],
+//          ['not-sound', '/']
+//     ]
 function splitIpaSounds(ipaWord) {
     var result = [],
         // int: the longest sound we know of (in IPA).
-        longestSound = soundList.maximum(function(sound) {
+        longestSound = _.max(soundList, function(sound) {
             return sound.length
-        }),
-        // str: returns the next sound from the beginning of `ipaWord` whose
-        // IPA representation is `length` characters long (or `null` if none
-        // exists)
+        }).length,
+        // (str, int) -> str: returns the next sound from the beginning of
+        // `ipaWord` whose IPA representation is `length` characters long (or
+        // `null` if none exists)
         getNextSoundOfLength = function(ipaWord, length) {
             var candidate = ipaWord.slice(0, length)
 
@@ -95,24 +110,29 @@ function splitIpaSounds(ipaWord) {
                 return null
             }
         },
-        // str: returns the next sound from the beginning of `ipaWord` (or
-        // `null` if there is none)
+        // (str) -> str: returns the next sound from the beginning of `ipaWord`
+        // (or `null` if there is none)
         getNextSound = function(ipaWord) {
-
+            for (var length = 0; length <= longestSound; length++) {
+                var nextSound = getNextSoundOfLength(ipaWord, length)
+                if (nextSound !== null)
+                    return nextSound
+            }
+            return null
         }
 
     while (ipaWord.length > 0) {
-        for (var nextSoundLength = 1;
-                nextSoundLength <= longestSound;
-                nextSoundLength++) {
+        var nextSound = getNextSound(ipaWord),
+            type = 'sound'
 
-            var candidate = ipaWord.slice(0, nextSoundLength)
-            if (soundList.indexOf(candidate) > -1) {
-                ipaWord = ipaWord.slice(nextSoundLength)
-                result.push(candidate)
-                break
-            }
+        // if no sound found, just take the first char
+        if (nextSound === null) {
+            type = 'not-sound'
+            nextSound = ipaWord[0]
         }
+
+        result.push([type, nextSound])
+        ipaWord = ipaWord.slice(nextSound.length)
     }
 
     return result

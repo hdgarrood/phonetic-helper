@@ -71,7 +71,6 @@ var vowelList = Object.getOwnPropertyNames(phoneticKey.vowels),
     consonantList = Object.getOwnPropertyNames(phoneticKey.consonants),
     soundList = vowelList.concat(consonantList)
 
-
 function renderWord(word) {
     var parts = word.split('*')
     return parts[0] + '<em>' + parts[1] + '</em>' + parts[2]
@@ -113,7 +112,7 @@ function splitIpaSounds(ipaWord) {
         // (str) -> str: returns the next sound from the beginning of `ipaWord`
         // (or `null` if there is none)
         getNextSound = function(ipaWord) {
-            for (var length = 0; length <= longestSound; length++) {
+            for (var length = 1; length <= longestSound; length++) {
                 var nextSound = getNextSoundOfLength(ipaWord, length)
                 if (nextSound !== null)
                     return nextSound
